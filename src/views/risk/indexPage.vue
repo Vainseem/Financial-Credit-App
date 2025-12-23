@@ -1,54 +1,76 @@
 <template>
   <IonPage>
-    <IonHeader>
-      <IonToolbar color="primary">
-        <IonTitle>风控评分</IonTitle>
-      </IonToolbar>
-    </IonHeader>
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="risk-toolbar">
+        <ion-title>信用评估</ion-title>
+      </ion-toolbar>
+    </ion-header>
 
-    <IonContent class="ion-padding">
-      <div class="score-card">
-        <h2>信用评分</h2>
-        <div class="score-number">{{ score }}</div>
-        <div class="score-level">{{ scoreLevel }}</div>
-        <p class="score-tip">
-          当前评分基于您的历史借款、还款记录与实名认证信息综合计算得出。
-        </p>
+    <ion-content class="ion-padding risk-content">
+      <!-- 信用分仪表盘装饰 -->
+      <div class="score-dashboard">
+        <div class="dashboard-inner">
+          <div class="score-main">
+            <span class="score-val">{{ score }}</span>
+            <span class="score-label">信用分</span>
+          </div>
+          <div class="score-status">{{ scoreLevel }}</div>
+          <div class="update-time">评估时间：{{ today }}</div>
+        </div>
       </div>
 
-      <IonCard>
-        <IonCardHeader>
-          <IonCardTitle>信用构成</IonCardTitle>
-        </IonCardHeader>
+      <!-- 信用评估详情 -->
+      <div class="section-title">信用报告</div>
+      <IonCard class="detail-card">
         <IonCardContent>
-          <ul class="score-detail">
-            <li>实名认证：已完成 ✅</li>
-            <li>历史借款记录：良好 ✅</li>
-            <li>还款按时率：95%</li>
-            <li>银行卡绑定：已绑定 ✅</li>
-            <li>当前借款逾期：无</li>
-          </ul>
+          <div class="factor-item">
+            <div class="factor-info">
+              <span class="label">实名认证</span>
+              <span class="status success">已完成</span>
+            </div>
+            <div class="progress-bar"><div class="fill" style="width: 100%"></div></div>
+          </div>
+          <div class="factor-item">
+            <div class="factor-info">
+              <span class="label">履约能力</span>
+              <span class="status success">极好</span>
+            </div>
+            <div class="progress-bar"><div class="fill" style="width: 90%"></div></div>
+          </div>
+          <div class="factor-item">
+            <div class="factor-info">
+              <span class="label">历史还款</span>
+              <span class="status">良好</span>
+            </div>
+            <div class="progress-bar"><div class="fill" style="width: 85%"></div></div>
+          </div>
         </IonCardContent>
       </IonCard>
 
-      <IonCard>
-        <IonCardHeader>
-          <IonCardTitle>提升建议</IonCardTitle>
-        </IonCardHeader>
-        <IonCardContent>
-          <ul class="score-suggest">
-            <li>保持良好还款习惯</li>
-            <li>完善个人资料</li>
-            <li>持续使用平台功能</li>
-          </ul>
-        </IonCardContent>
-      </IonCard>
-    </IonContent>
+      <!-- 提升建议 -->
+      <div class="section-title">提升建议</div>
+      <div class="suggest-grid">
+        <div class="suggest-item">
+          <ion-icon :icon="shieldCheckmarkOutline" color="primary"></ion-icon>
+          <p>完善个人资料</p>
+        </div>
+        <div class="suggest-item">
+          <ion-icon :icon="calendarOutline" color="primary"></ion-icon>
+          <p>保持按时还款</p>
+        </div>
+        <div class="suggest-item">
+          <ion-icon :icon="walletOutline" color="primary"></ion-icon>
+          <p>增加账户活跃</p>
+        </div>
+      </div>
+
+      <div style="height: 60px"></div>
+    </ion-content>
     <MyFooter />
   </IonPage>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
   IonPage,
   IonHeader,
@@ -59,43 +81,167 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonCardContent,
+  IonIcon,
 } from "@ionic/vue";
+import { shieldCheckmarkOutline, calendarOutline, walletOutline } from 'ionicons/icons';
 import MyFooter from "@/components/MyFooter.vue";
-const score = 780;
-const scoreLevel = "信用优秀";
+import { ref } from 'vue';
+
+const score = ref(780);
+const scoreLevel = ref("信用卓越");
+const today = new Date().toLocaleDateString();
 </script>
 
 <style scoped>
-.score-card {
+.risk-toolbar {
+  --background: #fff;
+  --color: #333;
+}
+
+.risk-content {
+  --background: #f8fbff;
+}
+
+.score-dashboard {
+  background: linear-gradient(135deg, #1d72ff 0%, #00a2ff 100%);
+  padding: 40px 20px;
+  border-radius: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30px;
+  box-shadow: 0 10px 25px rgba(29, 114, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.score-dashboard::after {
+  content: '';
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  right: -50px;
+  bottom: -50px;
+}
+
+.dashboard-inner {
   text-align: center;
-  background: #f3f4f6;
-  padding: 20px;
-  border-radius: 16px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  color: white;
+  z-index: 1;
 }
-.score-number {
-  font-size: 48px;
+
+.score-main {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.score-val {
+  font-size: 64px;
   font-weight: bold;
-  color: #2c7be5;
-  margin: 10px 0;
+  line-height: 1;
 }
-.score-level {
-  font-size: 18px;
-  color: #4caf50;
-}
-.score-tip {
+
+.score-label {
   font-size: 14px;
+  opacity: 0.8;
+  letter-spacing: 2px;
+}
+
+.score-status {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.update-time {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 20px 0 12px 5px;
+}
+
+.detail-card {
+  margin: 0;
+  border-radius: 20px;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.factor-item {
+  margin-bottom: 20px;
+}
+
+.factor-item:last-child {
+  margin-bottom: 0;
+}
+
+.factor-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.factor-info .label {
   color: #666;
 }
-.score-detail,
-.score-suggest {
-  list-style: none;
-  padding: 0;
-  font-size: 15px;
+
+.factor-info .status {
+  font-weight: 500;
 }
-.score-detail li,
-.score-suggest li {
+
+.factor-info .status.success {
+  color: #2dd36f;
+}
+
+.progress-bar {
+  height: 6px;
+  background: #f0f0f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar .fill {
+  height: 100%;
+  background: #1d72ff;
+  border-radius: 3px;
+}
+
+.suggest-grid {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.suggest-item {
+  flex: 1;
+  background: white;
+  padding: 15px 10px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.suggest-item ion-icon {
+  font-size: 24px;
   margin-bottom: 8px;
+}
+
+.suggest-item p {
+  margin: 0;
+  font-size: 12px;
+  color: #333;
+  font-weight: 500;
 }
 </style>

@@ -1,89 +1,86 @@
-import { request } from "@/apis/request";
+import { request8081 as request } from "@/apis/request";
 
-export const userLogin = (username: string, password: string) => {
+// 手机号登录 (根据接口文档 6)
+export const mobileLogin = (mobile: string, password: string, captcha_id: string, captcha: string) => {
   return request({
-    url: '/login',
-    method: 'post',
-    data: {
-      username,
-      password
+    url: '/user/mobile_pwd_login',
+    method: "GET",
+    params: {
+      mobile,
+      password,
+      captcha_id,
+      captcha
     }
-  })
-}
-
-export const sendEmail = (email: string) => {
-  const formData = new FormData();
-  formData.append("email", email); // 设置 mobile 字段
-  formData.append("type", "1"); // 设置 type 字段
-  return request({
-    url: "/user/send_email",
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-    method: "POST",
-    data: formData,
   });
 };
 
-export const sendSms = (phone: string) => {
-  const formData = new FormData();
-  formData.append("phone", phone); // 设置 mobile 字段
-  formData.append("type", "1"); // 设置 type 字段
+// 邮箱登录 (根据接口文档 7)
+export const emailLogin = (email: string, password: string, captcha_id: string, captcha: string) => {
+  return request({
+    url: '/user/email_pwd_login',
+    method: "GET",
+    params: {
+      email,
+      password,
+      captcha_id,
+      captcha
+    }
+  });
+};
+
+// 发送短信验证码 (根据接口文档 2)
+export const sendSms = (mobile: string, type: number = 1) => {
   return request({
     url: "/user/send_sms",
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
     method: "POST",
-    data: formData,
+    data: {
+      mobile,
+      type
+    }
   });
 };
 
-export const emailRegister = (email: string, nickname: string, password: string, code: string) => {
-  const formData = new FormData();
-  formData.append("email", email);
-  formData.append("nickname", nickname);
-  formData.append("password", password);
-  formData.append("code", code);
+// 发送邮箱验证码 (根据接口文档 3)
+export const sendEmail = (email: string, type: number = 1) => {
   return request({
-    url: "/user/email_register",
+    url: "/user/send_email",
     method: "POST",
-    data: formData,
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
+    data: {
+      email,
+      type
+    }
   });
 };
 
-export const mobileRegister = (phone: string, nickname: string, password: string, code: string) => {
-  const formData = new FormData();
-  formData.append("phone", phone);
-  formData.append("nickname", nickname);
-  formData.append("password", password);
-  formData.append("code", code);
+// 手机号注册 (根据接口文档 4)
+export const mobileRegister = (mobile: string, nickname: string, password: string, code: string) => {
   return request({
     url: "/user/mobile_register",
     method: "POST",
-    data: formData,
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
+    data: {
+      mobile,
+      nickname,
+      password,
+      code
+    }
   });
 };
 
-export const ifHaveToken = (token: string) => {
+// 邮箱注册 (根据接口文档 5)
+export const emailRegister = (email: string, nickname: string, password: string, code: string) => {
   return request({
-    url: "/user/mobile_pwd_login",
-    method: "GET",
-    headers: {
-      "x-token": token,
-    },
-    params: {
-      key: "value",
-    },
+    url: "/user/email_register",
+    method: "POST",
+    data: {
+      email,
+      nickname,
+      password,
+      code
+    }
   });
 };
 
+// 获取图形验证码 (根据接口文档 1)
 export const getVerification = async () => {
   return request({
     url: "/base/captcha",
@@ -91,17 +88,14 @@ export const getVerification = async () => {
   });
 };
 
-export const emailLogin = (email: string, password: string, captcha_id: string, captcha: string) => {
+// 检查 Token (保留原逻辑，但指向 8081)
+export const ifHaveToken = (token: string) => {
   return request({
-    url: `/user/email_pwd_login?email=${email}&password=${password}&captcha_id=${captcha_id}&captcha=${captcha}`,
+    url: "/user/mobile_pwd_login", // 或者是其他验证 token 的接口，这里暂时保持原样
     method: "GET",
-  });
-};
-
-export const mobileLogin = (mobile: string, password: string, captcha_id: string, captcha: string) => {
-  return request({
-    url: `/user/mobile_pwd_login?mobile=${mobile}&password=${password}&captcha_id=${captcha_id}&captcha=${captcha}`,
-    method: "GET",
+    headers: {
+      "x-token": token,
+    }
   });
 };
 

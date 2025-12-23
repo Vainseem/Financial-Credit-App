@@ -16,6 +16,11 @@
               <ion-icon name="settings-outline"></ion-icon>
               <div>我的</div>
             </IonCol>
+
+            <IonCol class="footer-tab" @click="goTo('AIchat')">
+              <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+              <div>AI客服</div>
+            </IonCol>
           </IonRow>
         </IonGrid>
       </IonToolbar>

@@ -29,19 +29,20 @@ import '@ionic/vue/css/text-transformation.css';
 
 /* @import '@ionic/vue/css/palettes/dark.always.css'; */
 /* @import '@ionic/vue/css/palettes/dark.class.css'; */
-import '@ionic/vue/css/palettes/dark.system.css';
+/* @import '@ionic/vue/css/palettes/dark.system.css'; */
 import './mock';
 /* Theme variables */
 import './theme/variables.css';
 
 import { addIcons } from 'ionicons';
-import { cardOutline, cashOutline, chevronBackOutline, exitOutline, homeOutline, personCircleOutline, settingsOutline } from 'ionicons/icons';
+import { cardOutline, cashOutline, chatbubbleEllipsesOutline, chevronBackOutline, exitOutline, homeOutline, personCircleOutline, settingsOutline } from 'ionicons/icons';
 
 addIcons({
   'chevron-back': chevronBackOutline,
   'exit': exitOutline,
   'cash-outline': cashOutline,
   'card-outline': cardOutline,
+  'chatbubble-ellipses-outline': chatbubbleEllipsesOutline,
   homeOutline,
   personCircleOutline,
   settingsOutline
