@@ -24,16 +24,33 @@ const createRequest = (baseURL: string) => {
     return async (config: any) => {
         const url = config.url.startsWith('http') ? config.url : baseURL + (config.url.startsWith('/') ? config.url.substring(1) : config.url);
 
+        let finalData = config.data;
+        let finalHeaders = { ...config.headers };
+
+        // CapacitorHttp 不识别 FormData 对象，需要手动转换为普通对象
+        if (finalData instanceof FormData) {
+            const obj: any = {};
+            finalData.forEach((value, key) => {
+                obj[key] = value;
+            });
+            finalData = obj;
+
+            // 在原生环境下，如果是 FormData 转换来的普通对象，Content-Type 设为 urlencoded 兼容性更好
+            if (!finalHeaders['Content-Type'] || finalHeaders['Content-Type'] === 'multipart/form-data') {
+                finalHeaders['Content-Type'] = 'application/x-www-form-urlencoded';
+            }
+        }
+
         try {
             const response: HttpResponse = await CapacitorHttp.request({
                 url: url,
                 method: (config.method || 'GET').toUpperCase(),
                 headers: {
                     'Content-Type': 'application/json',
-                    ...config.headers,
+                    ...finalHeaders,
                 },
                 params: config.params || {},
-                data: config.data || {},
+                data: finalData,
                 connectTimeout: 10000,
                 readTimeout: 10000,
             });

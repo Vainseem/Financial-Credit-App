@@ -73,14 +73,21 @@
         <IonCardContent>
           <ion-list v-if="tableData.length > 0">
             <ion-item
-              v-for="(loan, index) in tableData.slice(0, 3)"
+              v-for="(loan, index) in tableData.slice(0, 5)"
               :key="index"
+              class="loan-item"
             >
               <ion-label>
-                <h3>订单号: {{ loan.LoanId }}</h3>
-                <p>金额: {{ loan.LoanAmount }} 元</p>
+                <h3>订单号: #{{ loan.LoanId }}</h3>
+                <p class="loan-amount">金额: {{ loan.LoanAmount }} 元</p>
+                <p class="loan-time">{{ loan.CreatAt }}</p>
               </ion-label>
-              <ion-badge slot="end" color="primary">详情</ion-badge>
+              <ion-badge
+                slot="end"
+                :color="loan.Status === 'approved' ? 'success' : 'warning'"
+              >
+                {{ loan.Status === "approved" ? "已通过" : "审核中" }}
+              </ion-badge>
             </ion-item>
           </ion-list>
           <div v-else class="no-data">
@@ -193,7 +200,7 @@ import {
 import { exitOutline, settingsOutline } from "ionicons/icons";
 import MyFooter from "@/components/MyFooter.vue";
 import { useRouter } from "vue-router";
-import { reactive, onMounted, ref, computed } from "vue";
+import { onMounted, ref, computed } from "vue";
 import { getLoanOrder } from "@/apis/loan";
 import { getUserInfo, updateUserInfo } from "@/apis/user";
 
@@ -214,7 +221,11 @@ const userInitials = computed(() => {
 
 const logout = () => {
   localStorage.clear();
+
   router.push("/login");
+  setTimeout(() => {
+    window.location.reload();
+  }, 500);
 };
 
 const fetchUserInfo = async () => {
@@ -225,11 +236,26 @@ const fetchUserInfo = async () => {
       if (res.data) {
         userInfo.value = res.data;
         editData.value = { ...res.data };
-        // 同步更新 LocalStorage 中的一些关键信息
-        if (res.data.NickName) localStorage.setItem("nickname", res.data.NickName);
+        if (res.data.NickName)
+          localStorage.setItem("nickname", res.data.NickName);
       }
     } catch (e) {
       console.error("Fetch user info error", e);
+    }
+  }
+};
+
+const fetchLoanRecords = async () => {
+  const id = localStorage.getItem("id");
+  if (id) {
+    try {
+      const { data } = await getLoanOrder(Number(id));
+      if (data) {
+        // 参考 repay/indexPage.vue 的逻辑，直接使用返回的数组
+        tableData.value = data;
+      }
+    } catch (e) {
+      console.error("Fetch loan records error", e);
     }
   }
 };
@@ -258,18 +284,8 @@ const saveUserInfo = async () => {
 };
 
 onMounted(async () => {
-  const id = localStorage.getItem("id");
-  if (id) {
-    fetchUserInfo();
-    try {
-      const { data } = await getLoanOrder(Number(id));
-      if (data && data.data) {
-        tableData.value = data.data;
-      }
-    } catch (e) {
-      console.error("Fetch loan records error", e);
-    }
-  }
+  fetchUserInfo();
+  fetchLoanRecords();
 });
 </script>
 
@@ -366,6 +382,21 @@ ion-label {
 ion-text {
   color: #333;
   font-weight: 500;
+}
+
+.loan-item {
+  margin-bottom: 5px;
+}
+
+.loan-amount {
+  font-weight: 600;
+  color: #333;
+  margin-top: 4px;
+}
+
+.loan-time {
+  font-size: 12px;
+  color: #999;
 }
 
 .no-data {

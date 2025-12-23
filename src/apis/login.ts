@@ -28,55 +28,67 @@ export const emailLogin = (email: string, password: string, captcha_id: string, 
   });
 };
 
-// 发送短信验证码 (根据接口文档 2)
-export const sendSms = (mobile: string, type: number = 1) => {
+// 发送短信验证码 (根据用户要求使用 FormData)
+export const sendSms = (mobile: string, type: string = "1") => {
+  const formData = new FormData();
+  formData.append("mobile", mobile);
+  formData.append("type", type);
   return request({
     url: "/user/send_sms",
     method: "POST",
-    data: {
-      mobile,
-      type
-    }
+    data: formData,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
   });
 };
 
-// 发送邮箱验证码 (根据接口文档 3)
-export const sendEmail = (email: string, type: number = 1) => {
+// 发送邮箱验证码 (根据接口文档 3，同步改为使用 FormData)
+export const sendEmail = (email: string, type: string = "1") => {
+  const formData = new FormData();
+  formData.append("email", email);
+  formData.append("type", type);
   return request({
     url: "/user/send_email",
     method: "POST",
-    data: {
-      email,
-      type
-    }
+    data: formData,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
   });
 };
 
-// 手机号注册 (根据接口文档 4)
-export const mobileRegister = (mobile: string, nickname: string, password: string, code: string) => {
+// 手机号注册 (根据用户要求使用 FormData)
+export const mobileRegister = (phone: string, nickname: string, password: string, code: string) => {
+  const formData = new FormData();
+  formData.append("mobile", phone);
+  formData.append("nickname", nickname);
+  formData.append("password", password);
+  formData.append("code", code);
   return request({
     url: "/user/mobile_register",
     method: "POST",
-    data: {
-      mobile,
-      nickname,
-      password,
-      code
-    }
+    data: formData,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
   });
 };
 
-// 邮箱注册 (根据接口文档 5)
+// 邮箱注册 (根据用户要求使用 FormData)
 export const emailRegister = (email: string, nickname: string, password: string, code: string) => {
+  const formData = new FormData();
+  formData.append("email", email);
+  formData.append("nickname", nickname);
+  formData.append("password", password);
+  formData.append("code", code);
   return request({
     url: "/user/email_register",
     method: "POST",
-    data: {
-      email,
-      nickname,
-      password,
-      code
-    }
+    data: formData,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
   });
 };
 
@@ -88,14 +100,13 @@ export const getVerification = async () => {
   });
 };
 
-// 检查 Token (保留原逻辑，但指向 8081)
+// 检查 Token (指向 8081)
 export const ifHaveToken = (token: string) => {
   return request({
-    url: "/user/mobile_pwd_login", // 或者是其他验证 token 的接口，这里暂时保持原样
+    url: "/user/mobile_pwd_login",
     method: "GET",
     headers: {
       "x-token": token,
     }
   });
 };
-

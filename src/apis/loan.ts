@@ -7,16 +7,18 @@ export const submitLoanApplication = (
   id: any,
   form: any,
   interestRate: any,
-  totalRepayAmount: any,
-  monthPay: any
+  totalRepayAmount: number,
+  monthPay: number
 ) => {
   const formData = new FormData();
   formData.append("borrower_id", id);
   formData.append("loan_amount", form.loanAmount);
   formData.append("pay_month", form.loanTerm);
   formData.append("interest_rate", interestRate);
-  formData.append("total_repay_amount", Math.ceil(totalRepayAmount).toString());
-  formData.append("month_pay", Math.ceil(monthPay).toString());
+  // @ts-ignore
+  formData.append("total_repay_amount", Math.ceil(totalRepayAmount));
+  // @ts-ignore
+  formData.append("month_pay", Math.ceil(monthPay));
 
   return request({
     method: "POST",

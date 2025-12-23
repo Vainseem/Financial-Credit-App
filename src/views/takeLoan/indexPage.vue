@@ -200,9 +200,9 @@ const submit = async () => {
       totalRepayment.value,
       monthlyPayment.value
     );
-    
+
     // 返回结果处理
-    if (res.data && (res.data.msg === "贷款订单提交成功" || res.status === 200)) {
+    if (res.data) {
       const toast = await toastController.create({
         message: res.data.msg || "申请提交成功",
         duration: 2500,
@@ -210,6 +210,9 @@ const submit = async () => {
         color: "success",
       });
       toast.present();
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
       router.push("/user");
     }
   } catch (e) {

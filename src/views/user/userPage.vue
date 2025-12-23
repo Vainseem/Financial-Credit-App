@@ -2,7 +2,7 @@
   <IonPage>
     <ion-header class="ion-no-border">
       <ion-toolbar class="home-toolbar">
-        <ion-title>智汇金服</ion-title>
+        <ion-title>智汇贷</ion-title>
         <ion-buttons slot="end">
           <ion-button @click="goTo('my')">
             <ion-icon :icon="personCircleOutline" size="large"></ion-icon>
@@ -42,7 +42,7 @@
         <IonCardContent>
           <div class="greeting-box">
             <h3>{{ greeting }}</h3>
-            <p>您的信用评分：<span class="score">750</span> (优)</p>
+            <p>您的信用评分：<span class="score">780</span> (优)</p>
           </div>
         </IonCardContent>
       </IonCard>
@@ -89,22 +89,43 @@ import {
   IonButton,
   IonText,
 } from "@ionic/vue";
-import { 
-  cashOutline, 
-  cardOutline, 
-  personCircleOutline, 
-  chatbubbleEllipsesOutline 
-} from 'ionicons/icons';
+import {
+  cashOutline,
+  cardOutline,
+  personCircleOutline,
+  chatbubbleEllipsesOutline,
+} from "ionicons/icons";
 import MyFooter from "@/components/MyFooter.vue";
 import MyHeader from "@/components/MyHeader.vue";
 import { useRouter } from "vue-router";
-import { ref, onMounted } from 'vue';
+import { ref, onMounted } from "vue";
+import { getUserInfo } from "@/apis/user";
 
 const router = useRouter();
 
+const fetchUserInfo = async () => {
+  const id = localStorage.getItem("id");
+  if (id) {
+    try {
+      const res = await getUserInfo(Number(id));
+      if (res.data) {
+        // 将后端返回的所有字段存入 LocalStorage
+        localStorage.setItem("nickname", res.data.NickName || "");
+        localStorage.setItem("email", res.data.Email || "");
+        localStorage.setItem("mobile", res.data.Mobile || "");
+        localStorage.setItem("userInfo", JSON.stringify(res.data));
+        // 更新页面上的欢迎语
+        greeting.value = getGreeting();
+      }
+    } catch (e) {
+      console.error("Home fetch user info error", e);
+    }
+  }
+};
+
 const getGreeting = () => {
   const hour = new Date().getHours();
-  const nickname = localStorage.getItem("nickname") || '尊敬的用户';
+  const nickname = localStorage.getItem("nickname") || "尊敬的用户";
   if (hour < 12) return `上午好，${nickname}`;
   if (hour < 18) return `下午好，${nickname}`;
   return `晚上好，${nickname}`;
@@ -117,7 +138,7 @@ const goTo = (route: string) => {
 };
 
 onMounted(() => {
-  greeting.value = getGreeting();
+  fetchUserInfo();
 });
 </script>
 
@@ -159,9 +180,15 @@ onMounted(() => {
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
 }
 
-.icon-wrapper.loan { background: linear-gradient(135deg, #ff9a44 0%, #ff6b6b 100%); }
-.icon-wrapper.repay { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-.icon-wrapper.ai { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.icon-wrapper.loan {
+  background: linear-gradient(135deg, #ff9a44 0%, #ff6b6b 100%);
+}
+.icon-wrapper.repay {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+.icon-wrapper.ai {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
 
 .action-item span {
   font-size: 13px;
@@ -241,7 +268,9 @@ onMounted(() => {
   flex-shrink: 0;
 }
 
-.dot.red { background: #ff4d4f; }
+.dot.red {
+  background: #ff4d4f;
+}
 
 .notice-item p {
   margin: 0;

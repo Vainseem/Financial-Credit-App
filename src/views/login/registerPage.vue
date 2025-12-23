@@ -31,37 +31,57 @@
           <!-- 手机号/邮箱输入 -->
           <ion-item v-if="registerType === 'mobile'">
             <ion-label position="stacked">手机号码</ion-label>
-            <ion-input v-model="mobile" type="tel" placeholder="请输入11位手机号"></ion-input>
+            <ion-input
+              v-model="mobile"
+              type="tel"
+              placeholder="请输入11位手机号"
+            ></ion-input>
           </ion-item>
           <ion-item v-else>
             <ion-label position="stacked">邮箱地址</ion-label>
-            <ion-input v-model="email" type="email" placeholder="请输入您的邮箱"></ion-input>
+            <ion-input
+              v-model="email"
+              type="email"
+              placeholder="请输入您的邮箱"
+            ></ion-input>
           </ion-item>
 
           <!-- 昵称 -->
           <ion-item>
             <ion-label position="stacked">用户昵称</ion-label>
-            <ion-input v-model="nickname" type="text" placeholder="设置一个好听的名字"></ion-input>
+            <ion-input
+              v-model="nickname"
+              type="text"
+              placeholder="设置一个好听的名字"
+            ></ion-input>
           </ion-item>
 
           <!-- 密码 -->
           <ion-item>
             <ion-label position="stacked">登录密码</ion-label>
-            <ion-input v-model="password" type="password" placeholder="6-16位字母或数字"></ion-input>
+            <ion-input
+              v-model="password"
+              type="password"
+              placeholder="6-16位字母或数字"
+            ></ion-input>
           </ion-item>
 
           <!-- 验证码 -->
           <ion-item>
             <ion-label position="stacked">验证码</ion-label>
             <div class="code-wrapper">
-              <ion-input v-model="code" type="text" placeholder="请输入验证码"></ion-input>
-              <ion-button 
-                fill="clear" 
-                :disabled="counting" 
+              <ion-input
+                v-model="code"
+                type="text"
+                placeholder="请输入验证码"
+              ></ion-input>
+              <ion-button
+                fill="clear"
+                :disabled="counting"
                 @click="sendCode"
                 class="send-btn"
               >
-                {{ counting ? `${count}s后重发` : '获取验证码' }}
+                {{ counting ? `${count}s后重发` : "获取验证码" }}
               </ion-button>
             </div>
           </ion-item>
@@ -69,12 +89,16 @@
 
         <div class="agreement">
           <ion-checkbox v-model="agreed"></ion-checkbox>
-          <ion-label>我已阅读并同意<span>《用户服务协议》</span>及<span>《隐私政策》</span></ion-label>
+          <ion-label
+            >我已阅读并同意<span>《用户服务协议》</span>及<span
+              >《隐私政策》</span
+            ></ion-label
+          >
         </div>
 
-        <ion-button 
-          expand="block" 
-          class="register-btn" 
+        <ion-button
+          expand="block"
+          class="register-btn"
           @click="handleRegister"
           shape="round"
         >
@@ -106,19 +130,24 @@ import {
   IonSegment,
   IonSegmentButton,
   IonCheckbox,
-  toastController
-} from '@ionic/vue';
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { sendSms, sendEmail, mobileRegister, emailRegister } from '@/apis/login';
+  toastController,
+} from "@ionic/vue";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import {
+  sendSms,
+  sendEmail,
+  mobileRegister,
+  emailRegister,
+} from "@/apis/login";
 
 const router = useRouter();
-const registerType = ref('mobile');
-const mobile = ref('');
-const email = ref('');
-const nickname = ref('');
-const password = ref('');
-const code = ref('');
+const registerType = ref("mobile");
+const mobile = ref("");
+const email = ref("");
+const nickname = ref("");
+const password = ref("");
+const code = ref("");
 const agreed = ref(false);
 
 // 倒计时逻辑
@@ -139,62 +168,73 @@ const startCount = () => {
   }, 1000);
 };
 
-const showToast = async (message: string, color: string = 'primary') => {
+const showToast = async (message: string, color: string = "primary") => {
   const toast = await toastController.create({
     message,
     duration: 2000,
-    position: 'top',
-    color
+    position: "top",
+    color,
   });
   toast.present();
 };
 
 const sendCode = async () => {
   try {
-    if (registerType.value === 'mobile') {
+    if (registerType.value === "mobile") {
       if (!/^1[3-9]\d{9}$/.test(mobile.value)) {
-        return showToast('请输入正确的手机号', 'warning');
+        return showToast("请输入正确的手机号", "warning");
       }
-      const res = await sendSms(mobile.value, 1);
+      const res = await sendSms(mobile.value, "1");
       if (res.data.code === 200) {
-        showToast('短信验证码已发送', 'success');
+        showToast("短信验证码已发送", "success");
         startCount();
       }
     } else {
       if (!/@/.test(email.value)) {
-        return showToast('请输入正确的邮箱', 'warning');
+        return showToast("请输入正确的邮箱", "warning");
       }
-      const res = await sendEmail(email.value, 1);
+      const res = await sendEmail(email.value, "1");
       if (res.data.code === 200) {
-        showToast('邮箱验证码已发送', 'success');
+        showToast("邮箱验证码已发送", "success");
         startCount();
       }
     }
   } catch (e) {
-    showToast('发送失败，请稍后重试', 'danger');
+    showToast("发送失败，请稍后重试", "danger");
   }
 };
 
 const handleRegister = async () => {
-  if (!agreed.value) return showToast('请阅读并同意协议', 'warning');
-  if (!nickname.value || !password.value || !code.value) return showToast('请填写完整信息', 'warning');
+  if (!agreed.value) return showToast("请阅读并同意协议", "warning");
+  if (!nickname.value || !password.value || !code.value)
+    return showToast("请填写完整信息", "warning");
 
   try {
     let res;
-    if (registerType.value === 'mobile') {
-      res = await mobileRegister(mobile.value, nickname.value, password.value, code.value);
+    if (registerType.value === "mobile") {
+      res = await mobileRegister(
+        mobile.value,
+        nickname.value,
+        password.value,
+        code.value
+      );
     } else {
-      res = await emailRegister(email.value, nickname.value, password.value, code.value);
+      res = await emailRegister(
+        email.value,
+        nickname.value,
+        password.value,
+        code.value
+      );
     }
 
     if (res.data.code === 200) {
-      showToast('注册成功，请登录', 'success');
-      router.push('/login');
+      showToast("注册成功，请登录", "success");
+      router.push("/login");
     } else {
-      showToast(res.data.message || '注册失败', 'danger');
+      showToast(res.data.message || "注册失败", "danger");
     }
   } catch (e) {
-    showToast('注册异常，请检查网络', 'danger');
+    showToast("注册异常，请检查网络", "danger");
   }
 };
 </script>
